@@ -17,7 +17,7 @@
                     <p class="help is-pulled-left" style="padding-left: 10px;" v-show="showSaved">Last auto saved at {{ lastSavedAt }}</p>
                 </transition>
 
-                <div class="field is-pulled-right" style="min-width: 140px;">
+                <div class="field is-pulled-right" style="min-width: 140px;" v-show="autosaveShowSwitch">
                     <input id="markdown-autosave" type="checkbox" name="markdown-autosave" class="switch is-thin" :checked="autosave" v-model="autosaveIsActive">
                     <label for="markdown-autosave" style="font-size: 0.7rem; padding-top: 0.3rem;">Autosave {{ autosaveStatusText }}</label>
                 </div>
@@ -67,6 +67,11 @@
             Markdown,
         },
 
+        model: {
+          prop: 'content',
+          event: 'change'
+        },
+
         computed: {
             autosaveStatusText() {
                 return this.autosaveIsActive ? 'On' : 'Off'
@@ -87,6 +92,7 @@
                 body: this.content,
                 markdownReferences: MarkdownReferences,
                 showSaved: false,
+                autosaveShowSwitch: this.autosaveSwitchVisible,
                 lastSavedAt: null,
                 autosaveIsActive: this.autosave
             }
@@ -95,6 +101,8 @@
         methods: {
             handleChange(e) {
                 this.body = e.target.value
+
+                this.$emit('change', this.body)
 
                 if (this.autosaveIsActive) {
                     this.save()
@@ -140,6 +148,11 @@
             autosaveMethod: {
                 default: 'patch',
                 type: String,
+            },
+
+            autosaveSwitchVisible: {
+                default: true,
+                type: Boolean,
             },
 
             content: {
